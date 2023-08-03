@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
@@ -9,11 +10,31 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(0, -26)
 
+        # test graphics
+        self.import_player_assets()
+
+        #movment
         self.direction = pygame.math.Vector2()  # started with an x and y of 0. altering them positivlye or negativley will influence our direction
         self.speed = 5
 
+        self.attacking = False  #combat timer attributes
+        self.attack_cooldown = 400
+        self.attack_time = None
+
         self.obstacle_sprites = obstacle_sprites
 
+
+    def import_player_assets(self):
+        character_path = '../graphics/player/'
+        self.animations = {'up': [], 'down': [], 'left': [], 'right':[],
+                           'right_idle': [], 'left_idle': [], 'up_idle': [], 'down_idle': [],
+                           'right_attack': [], 'left_attack': [], 'up_attack': [], 'down_attack': []}
+        for animation in self.animations.keys():
+            path = character_path + animation
+            self.animations[animation] = import_folder(path)
+        print (self.animations)
+
+    #move
     def input(self):
         keys = pygame.key.get_pressed()  # pygame method for up and down
 
@@ -30,6 +51,20 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 1
         else:
             self.direction.x = 0
+
+        #fight
+        if keys[pygame.K_SPACE] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            print("ATTACK")
+
+
+
+        #mana
+        if keys[pygame.K_LCTRL] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            print("MAGIC")
 
     def move(self, speed):
         if self.direction.magnitude() != 0:  # vector of 0 cannot be normalized
@@ -64,4 +99,13 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.input()
+        self.cooldown()
         self.move(self.speed)
+
+
+    def cooldown(self):
+        current_time = pygame.time.get_ticks() #will be counting whole game
+
+        if self.attacking:
+            if current_time - self.attack_time >= self.attack_cooldown:
+                self.attacking = False

@@ -7,7 +7,7 @@ from tile import Tile
 from player import Player
 from support import *
 from debug import debug
-import random
+from random import choice
 
 class Level:
     def __init__(self):
@@ -28,11 +28,12 @@ class Level:
              'object': import_csv_layout("E:\zeldaPython\map\map_objects.csv")
         }
         graphics = {
-            'grass': import_folder("E:\zeldaPython\graphics\import_folders\grass")
+            'grass': import_folder("E:\zeldaPython\graphics\import_folders\grass"),
+            'objects': import_folder("E:\zeldaPython\graphics\import_folders\objects")
         }
 
         for style,layout in layouts.items():
-            for row_index,row in enumerate(layout):  # row var just has what is in world map
+            for row_index, row in enumerate(layout):  # row var just has what is in world map
                  for col_index, col in enumerate(row):    # but row index keeps ttrack of index number through enumerate
                      if col != '-1':
                          x = col_index * TILESIZE
@@ -40,12 +41,13 @@ class Level:
                          if style == 'boundary':
                             Tile((x,y), [self.obstacle_sprites], 'invisible')
                          if style == 'grass':
-                             choice = random.randint(1,2)
-                             Tile((x,y),[self.visible_sprites],)
-                             #create grass tyle
+                             random_grass = choice(graphics['grass'])
+                             Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'grass',random_grass)
+
                          if style == 'object':
-                             pass
-                             #object
+                            surf = graphics['objects'][int(col)]
+                            Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'object',surf) # need to fix tiled ids
+
 
         #         if col == 'x':
         #             Tile((x, y),[self.visible_sprites, self.obstacle_sprites])
