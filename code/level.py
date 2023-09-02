@@ -24,15 +24,15 @@ class Level:
     def create_map(self):
         layouts = {
              'boundary': import_csv_layout('../map/map_Border.csv'),
-             'grass': import_csv_layout("E:\zeldaPython\map\map_grass.csv"),
-             'object': import_csv_layout("E:\zeldaPython\map\map_objects.csv")
+             'grass': import_csv_layout("..\map\map_grass.csv"),
+             'object': import_csv_layout("..\map\map_objects.csv")
         }
         graphics = {
-            'grass': import_folder("E:\zeldaPython\graphics\import_folders\grass"),
-            'objects': import_folder("E:\zeldaPython\graphics\import_folders\objects")
+            'grass': import_folder("..\graphics\import_folders\grass"),
+            'objects': import_folder("..\graphics\import_folders\objects")
         }
 
-        for style,layout in layouts.items():
+        for style, layout in layouts.items():
             for row_index, row in enumerate(layout):  # row var just has what is in world map
                  for col_index, col in enumerate(row):    # but row index keeps ttrack of index number through enumerate
                      if col != '-1':
@@ -42,23 +42,24 @@ class Level:
                             Tile((x,y), [self.obstacle_sprites], 'invisible')
                          if style == 'grass':
                              random_grass = choice(graphics['grass'])
-                             Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'grass',random_grass)
+                             Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'grass', random_grass)
 
                          if style == 'object':
                             surf = graphics['objects'][int(col)]
-                            Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'object',surf) # need to fix tiled ids
+                            Tile((x,y),[self.visible_sprites, self.obstacle_sprites],'object', surf) # need to fix tiled ids
 
 
         #         if col == 'x':
         #             Tile((x, y),[self.visible_sprites, self.obstacle_sprites])
         #         if col == 'p':
         #            self.player = Player((x,y),[self.visible_sprites], self.obstacle_sprites)
-        self.player = Player((1500,2000), [self.visible_sprites], self.obstacle_sprites)
+        self.player = Player((1500, 1800), [self.visible_sprites], self.obstacle_sprites)
 
     def run(self):
         #update and draw game
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
+        #debug(self.player.status)
 
 
 class YSortCameraGroup(pygame.sprite.Group):   # remember this is how python does inheritance
@@ -85,10 +86,9 @@ class YSortCameraGroup(pygame.sprite.Group):   # remember this is how python doe
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display_surface.blit(self.floor_surface, floor_offset_pos)
 
-        #for sprite in self.sprites():
-        for sprite in sorted(self.sprites(), key = lambda sprite: sprite.rect.centery):
+        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_post = sprite.rect.topleft - self.offset
-            self.display_surface.blit(sprite.image,offset_post)
+            self.display_surface.blit(sprite.image, offset_post)
 
     #we need to order sprites. So that when we apply depth it wont seem off
     # depending on which ones were created first or not
